@@ -1,0 +1,7 @@
+[package]
+name = "ray-tracer-challenge"
+version = "0.1.0"
+authors = ["Ilja Sidoroff <ilja.sidoroff@iki.fi>"]
+edition = "2018"
+
+[dependencies]
