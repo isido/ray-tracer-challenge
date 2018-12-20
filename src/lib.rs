@@ -1,3 +1,8 @@
+use std::ops::Add;
+use std::ops::Neg;
+use std::ops::Sub;
+
+#[derive(Debug, PartialEq)]
 struct Tuple(f64, f64, f64, f64);
 
 impl Tuple {
@@ -9,6 +14,40 @@ impl Tuple {
     }
 }
 
+impl Add for Tuple {
+    type Output = Tuple;
+
+    fn add(self, other: Tuple) -> Tuple {
+        Tuple(
+            self.0 + other.0,
+            self.1 + other.1,
+            self.2 + other.2,
+            self.3 + other.3,
+        )
+    }
+}
+
+impl Sub for Tuple {
+    type Output = Tuple;
+
+    fn sub(self, other: Tuple) -> Tuple {
+        Tuple(
+            self.0 - other.0,
+            self.1 - other.1,
+            self.2 - other.2,
+            self.3 - other.3,
+        )
+    }
+}
+
+impl Neg for Tuple {
+    type Output = Tuple;
+
+    fn neg(self) -> Tuple {
+        Tuple(-self.0, -self.1, -self.2, -self.3)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -16,22 +55,93 @@ mod tests {
     #[test]
     fn tuple_point() {
         // A tuple with w=1.0 is a point
-        let t = Tuple::point(4.3, -4.2, 3.1);
+        let p = Tuple::point(4.3, -4.2, 3.1);
 
-        assert_eq!(t.0, 4.3);
-        assert_eq!(t.1, -4.2);
-        assert_eq!(t.2, 3.1);
-        assert_eq!(t.3, 1.0);
+        assert_eq!(p.0, 4.3);
+        assert_eq!(p.1, -4.2);
+        assert_eq!(p.2, 3.1);
+        assert_eq!(p.3, 1.0);
     }
 
     #[test]
     fn tuple_vector() {
         // A tuple with w=0 is a vector
-        let t = Tuple::vector(4.3, -4.2, 3.1);
+        let v = Tuple::vector(4.3, -4.2, 3.1);
 
-        assert_eq!(t.0, 4.3);
-        assert_eq!(t.1, -4.2);
-        assert_eq!(t.2, 3.1);
-        assert_eq!(t.3, 0.0);
+        assert_eq!(v.0, 4.3);
+        assert_eq!(v.1, -4.2);
+        assert_eq!(v.2, 3.1);
+        assert_eq!(v.3, 0.0);
+    }
+
+    #[test]
+    fn equality_vector() {
+        let t1 = Tuple::vector(1.0, 1.0, 1.0);
+        let t2 = Tuple::vector(1.0, 1.0, 1.0);
+
+        assert_eq!(t1, t2);
+    }
+
+    #[test]
+    fn inequality_vector_point() {
+        let t = Tuple::vector(1.0, 1.0, 1.0);
+        let p = Tuple::point(1.0, 1.0, 1.0);
+
+        assert_ne!(t, p);
+    }
+
+    #[test]
+    fn inequality_vector_vector() {
+        let v1 = Tuple::vector(0.0, 1.0, 0.0);
+        let v2 = Tuple::vector(1.0, 0.0, 0.0);
+
+        assert_ne!(v1, v2);
+    }
+
+    #[test]
+    fn adding_two_tuples() {
+        let t1 = Tuple(3.0, -2.0, 5.0, 1.0);
+        let t2 = Tuple(-2.0, 3.0, 1.0, 0.0);
+
+        assert_eq!(Tuple(1.0, 1.0, 6.0, 1.0), t1 + t2);
+    }
+
+    #[test]
+    fn subtracting_two_points() {
+        let p1 = Tuple::point(3.0, 2.0, 1.0);
+        let p2 = Tuple::point(5.0, 6.0, 7.0);
+
+        assert_eq!(Tuple::vector(-2.0, -4.0, -6.0), p1 - p2);
+    }
+
+    #[test]
+    fn subtracting_vector_from_point() {
+        let p = Tuple::point(3.0, 2.0, 1.0);
+        let v = Tuple::vector(5.0, 6.0, 7.0);
+
+        assert_eq!(Tuple::point(-2.0, -4.0, -6.0), p - v);
+    }
+
+    #[test]
+    fn subtracting_two_vectors() {
+        let v1 = Tuple::vector(3.0, 2.0, 1.0);
+        let v2 = Tuple::vector(5.0, 6.0, 7.0);
+
+        assert_eq!(Tuple::vector(-2.0, -4.0, -6.0), v1 - v2);
+    }
+
+    #[test]
+    fn subtracting_vector_from_zero_vector() {
+        let zero = Tuple::vector(0.0, 0.0, 0.0);
+        let v = Tuple::vector(1.0, -2.0, 3.0);
+
+        assert_eq!(Tuple::vector(-1.0, 2.0, -3.0), zero - v);
+    }
+
+    #[test]
+    fn negating_tuple() {
+        let t = Tuple(1.0, -2.0, 3.0, -4.0);
+
+        assert_eq!(Tuple(-1.0, 2.0, -3.0, 4.0), -t);
     }
 }
