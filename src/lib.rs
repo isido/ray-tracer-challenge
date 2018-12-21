@@ -1,8 +1,10 @@
 use std::ops::Add;
+use std::ops::Div;
+use std::ops::Mul;
 use std::ops::Neg;
 use std::ops::Sub;
 
-#[derive(Debug, PartialEq)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 struct Tuple(f64, f64, f64, f64);
 
 impl Tuple {
@@ -11,6 +13,31 @@ impl Tuple {
     }
     fn vector(x: f64, y: f64, z: f64) -> Tuple {
         Tuple(x, y, z, 0.0)
+    }
+
+    fn magnitude(self) -> f64 {
+        (self.0 * self.0 + self.1 * self.1 + self.2 * self.2).sqrt()
+    }
+
+    fn normalize(self) -> Tuple {
+        Tuple(
+            self.0 / self.magnitude(),
+            self.1 / self.magnitude(),
+            self.2 / self.magnitude(),
+            self.3 / self.magnitude(),
+        )
+    }
+
+    fn dot(self, other: Tuple) -> f64 {
+        self.0 * other.0 + self.1 * other.1 + self.2 * other.2 + self.3 * other.3
+    }
+
+    fn cross(self, other: Tuple) -> Tuple {
+        Tuple::vector(
+            self.1 * other.2 - self.2 * other.1,
+            self.2 * other.0 - self.0 * other.2,
+            self.0 * other.1 - self.1 * other.0,
+        )
     }
 }
 
@@ -45,6 +72,22 @@ impl Neg for Tuple {
 
     fn neg(self) -> Tuple {
         Tuple(-self.0, -self.1, -self.2, -self.3)
+    }
+}
+
+impl Mul<f64> for Tuple {
+    type Output = Tuple;
+
+    fn mul(self, rhs: f64) -> Tuple {
+        Tuple(self.0 * rhs, self.1 * rhs, self.2 * rhs, self.3 * rhs)
+    }
+}
+
+impl Div<f64> for Tuple {
+    type Output = Tuple;
+
+    fn div(self, rhs: f64) -> Tuple {
+        Tuple(self.0 / rhs, self.1 / rhs, self.2 / rhs, self.3 / rhs)
     }
 }
 
@@ -143,5 +186,73 @@ mod tests {
         let t = Tuple(1.0, -2.0, 3.0, -4.0);
 
         assert_eq!(Tuple(-1.0, 2.0, -3.0, 4.0), -t);
+    }
+
+    #[test]
+    fn multiplying_tuple_by_scalar() {
+        let t = Tuple(1.0, -2.0, 3.0, -4.0);
+
+        assert_eq!(Tuple(3.5, -7.0, 10.5, -14.0), t * 3.5);
+    }
+
+    #[test]
+    fn multiplying_tuple_by_fraction() {
+        let t = Tuple(1.0, -2.0, 3.0, -4.0);
+
+        assert_eq!(Tuple(0.5, -1.0, 1.5, -2.0), t * 0.5);
+    }
+
+    #[test]
+    fn dividing_tuple_by_scalar() {
+        let t = Tuple(1.0, -2.0, 3.0, -4.0);
+
+        assert_eq!(Tuple(0.5, -1.0, 1.5, -2.0), t / 2.0);
+    }
+
+    #[test]
+    fn magnitude_of_vectors() {
+        assert_eq!(1.0, Tuple::vector(1.0, 0.0, 0.0).magnitude());
+        assert_eq!(1.0, Tuple::vector(0.0, 1.0, 0.0).magnitude());
+        assert_eq!(1.0, Tuple::vector(0.0, 0.0, 1.0).magnitude());
+        assert_eq!(14.0_f64.sqrt(), Tuple::vector(1.0, 2.0, 3.0).magnitude());
+        assert_eq!(14.0_f64.sqrt(), Tuple::vector(-1.0, -2.0, -3.0).magnitude());
+    }
+
+    #[test]
+    fn normalizing_vectors() {
+        assert_eq!(
+            Tuple::vector(1.0, 0.0, 0.0),
+            Tuple::vector(4.0, 0.0, 0.0).normalize()
+        );
+        assert_eq!(
+            Tuple::vector(
+                1.0 / 14.0_f64.sqrt(),
+                2.0 / 14.0_f64.sqrt(),
+                3.0 / 14.0_f64.sqrt()
+            ),
+            Tuple::vector(1.0, 2.0, 3.0).normalize()
+        );
+    }
+
+    #[test]
+    fn magnitude_of_normalized_vector() {
+        assert_eq!(1.0, Tuple::vector(1.0, 2.0, 3.0).normalize().magnitude());
+    }
+
+    #[test]
+    fn dot_product_of_two_tuples() {
+        let v1 = Tuple::vector(1.0, 2.0, 3.0);
+        let v2 = Tuple::vector(2.0, 3.0, 4.0);
+
+        assert_eq!(20.0, v1.dot(v2));
+    }
+
+    #[test]
+    fn cross_product_of_two_vectors() {
+        let v1 = Tuple::vector(1.0, 2.0, 3.0);
+        let v2 = Tuple::vector(2.0, 3.0, 4.0);
+
+        assert_eq!(Tuple::vector(-1.0, 2.0, -1.0), v1.cross(v2));
+        assert_eq!(Tuple::vector(1.0, -2.0, 1.0), v2.cross(v1));
     }
 }
