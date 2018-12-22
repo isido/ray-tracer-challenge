@@ -5,21 +5,21 @@ use std::ops::Neg;
 use std::ops::Sub;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
-struct Tuple(f64, f64, f64, f64);
+pub struct Tuple(pub f64, pub f64, pub f64, pub f64);
 
 impl Tuple {
-    fn point(x: f64, y: f64, z: f64) -> Tuple {
+    pub fn point(x: f64, y: f64, z: f64) -> Tuple {
         Tuple(x, y, z, 1.0)
     }
-    fn vector(x: f64, y: f64, z: f64) -> Tuple {
+    pub fn vector(x: f64, y: f64, z: f64) -> Tuple {
         Tuple(x, y, z, 0.0)
     }
 
-    fn magnitude(self) -> f64 {
+    pub fn magnitude(self) -> f64 {
         (self.0 * self.0 + self.1 * self.1 + self.2 * self.2).sqrt()
     }
 
-    fn normalize(self) -> Tuple {
+    pub fn normalize(self) -> Tuple {
         Tuple(
             self.0 / self.magnitude(),
             self.1 / self.magnitude(),
@@ -28,11 +28,11 @@ impl Tuple {
         )
     }
 
-    fn dot(self, other: Tuple) -> f64 {
+    pub fn dot(self, other: Tuple) -> f64 {
         self.0 * other.0 + self.1 * other.1 + self.2 * other.2 + self.3 * other.3
     }
 
-    fn cross(self, other: Tuple) -> Tuple {
+    pub fn cross(self, other: Tuple) -> Tuple {
         Tuple::vector(
             self.1 * other.2 - self.2 * other.1,
             self.2 * other.0 - self.0 * other.2,
