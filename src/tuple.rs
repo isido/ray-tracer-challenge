@@ -15,6 +15,10 @@ impl Tuple {
         Tuple(x, y, z, 0.0)
     }
 
+    pub fn color(red: f64, green: f64, blue: f64) -> Tuple {
+        Tuple(red, green, blue, 0.0)
+    }
+
     pub fn magnitude(self) -> f64 {
         (self.0 * self.0 + self.1 * self.1 + self.2 * self.2).sqrt()
     }
@@ -37,6 +41,15 @@ impl Tuple {
             self.1 * other.2 - self.2 * other.1,
             self.2 * other.0 - self.0 * other.2,
             self.0 * other.1 - self.1 * other.0,
+        )
+    }
+
+    pub fn hadamard(self, other: Tuple) -> Tuple {
+        Tuple(
+            self.0 * other.0,
+            self.1 * other.1,
+            self.2 * other.2,
+            self.3 * other.3,
         )
     }
 }
@@ -255,4 +268,45 @@ mod tests {
         assert_eq!(Tuple::vector(-1.0, 2.0, -1.0), v1.cross(v2));
         assert_eq!(Tuple::vector(1.0, -2.0, 1.0), v2.cross(v1));
     }
+
+    #[test]
+    fn colors_are_tuples() {
+        let c = Tuple::color(-0.5, 0.4, 1.7);
+
+        assert_eq!(-0.5, c.0);
+        assert_eq!(0.4, c.1);
+        assert_eq!(1.7, c.2);
+    }
+
+    #[test]
+    fn adding_colors() {
+        let c1 = Tuple::color(0.9, 0.6, 0.75);
+        let c2 = Tuple::color(0.7, 0.1, 0.25);
+
+        assert_eq!(Tuple::color(1.6, 0.7, 1.0), c1 + c2);
+    }
+
+    #[test]
+    fn subtracting_colors() {
+        let c1 = Tuple::color(0.9, 0.6, 0.75);
+        let c2 = Tuple::color(0.7, 0.1, 0.25);
+
+        assert_eq!(Tuple::color(0.2, 0.5, 0.5), c1 - c2); // TODO fix floating point rounding error error
+    }
+
+    #[test]
+    fn multiplying_color_by_scalar() {
+        let c = Tuple::color(0.2, 0.3, 0.4);
+
+        assert_eq!(Tuple::color(0.4, 0.6, 0.8), c * 2.0);
+    }
+
+    #[test]
+    fn multiplying_colors() {
+        let c1 = Tuple::color(1.0, 0.2, 0.4);
+        let c2 = Tuple::color(0.9, 1.0, 0.1);
+
+        assert_eq!(Tuple::color(0.9, 0.2, 0.04), c1.hadamard(c2));
+    }
+
 }
