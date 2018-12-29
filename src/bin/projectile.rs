@@ -33,9 +33,9 @@ fn main() {
     let width = 900;
     let height = 550;
     let mut canvas = Canvas::new(width, height);
+    let col = Tuple::color(0.5, 0.5, 0.5);
 
     while proj.position.1 > 0.0 {
-        let col = Tuple::color(0.5, 0.5, 0.5);
         let x = proj.position.0.round() as usize;
         let y = canvas.height - (proj.position.1.round() as usize);
 
