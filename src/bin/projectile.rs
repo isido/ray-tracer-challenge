@@ -1,5 +1,6 @@
 extern crate ray_tracer_challenge;
 
+use ray_tracer_challenge::canvas::Canvas;
 use ray_tracer_challenge::tuple::Tuple;
 
 struct Projectile {
@@ -26,14 +27,23 @@ fn main() {
     };
     let mut proj = Projectile {
         position: Tuple::point(0.0, 1.0, 0.0),
-        velocity: Tuple::vector(1.0, 1.0, 0.0).normalize(),
+        velocity: Tuple::vector(1.0, 1.8, 0.0).normalize() * 11.25,
     };
-    let mut ticks = 0;
 
-    println!("Initial position {:?} ", proj.position);
+    let width = 900;
+    let height = 550;
+    let mut canvas = Canvas::new(width, height);
+
     while proj.position.1 > 0.0 {
+        let col = Tuple::color(0.5, 0.5, 0.5);
+        let x = proj.position.0.round() as usize;
+        let y = canvas.height - (proj.position.1.round() as usize);
+
+        if x < canvas.width && y < canvas.height {
+            canvas.write_pixel(x, y, col);
+        }
+
         proj = tick(&env, &proj);
-        ticks += 1;
-        println!("Tick #{:?}, position {:?} ", ticks, proj.position);
     }
+    println!("{}", canvas.to_ppm());
 }
