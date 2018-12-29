@@ -4,7 +4,7 @@ use std::ops::Mul;
 use std::ops::Neg;
 use std::ops::Sub;
 
-#[derive(Copy, Clone, Debug, PartialEq)]
+#[derive(Copy, Clone, Debug)]
 pub struct Tuple(pub f64, pub f64, pub f64, pub f64);
 
 impl Tuple {
@@ -51,6 +51,16 @@ impl Tuple {
             self.2 * other.2,
             self.3 * other.3,
         )
+    }
+}
+
+impl PartialEq for Tuple {
+    fn eq(&self, other: &Tuple) -> bool {
+        let eps = 1e-6;
+        (self.0 - other.0).abs() < eps
+            && (self.1 - other.1).abs() < eps
+            && (self.2 - other.2).abs() < eps
+            && (self.3 - other.3).abs() < eps
     }
 }
 
