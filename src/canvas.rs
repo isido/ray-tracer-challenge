@@ -7,7 +7,7 @@ pub struct Canvas {
 }
 
 impl Canvas {
-    fn new(w: usize, h: usize) -> Canvas {
+    pub fn new(w: usize, h: usize) -> Canvas {
         let c = vec![Tuple::color(0.0, 0.0, 0.0); w * h];
         Canvas {
             width: w,
@@ -16,15 +16,15 @@ impl Canvas {
         }
     }
 
-    fn pixel_at(&self, x: usize, y: usize) -> Tuple {
+    pub fn pixel_at(&self, x: usize, y: usize) -> Tuple {
         self.canvas[x + y * self.width]
     }
 
-    fn write_pixel(&mut self, x: usize, y: usize, c: Tuple) {
+    pub fn write_pixel(&mut self, x: usize, y: usize, c: Tuple) {
         self.canvas[x + y * self.width] = c;
     }
 
-    fn to_ppm(&self) -> String {
+    pub fn to_ppm(&self) -> String {
         fn ppm_color(x: f64) -> i32 {
             let v = (x * 255.0).round() as i32;
             if v < 0 {
@@ -74,6 +74,7 @@ impl Canvas {
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
