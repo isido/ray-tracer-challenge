@@ -45,6 +45,40 @@ impl Matrix {
         }
         Matrix::from_vector(self.dim, &v)
     }
+
+    pub fn det(&self) -> f64 {
+        if self.dim == 2 {
+            return self.at(0, 0) * self.at(1, 1) - self.at(0, 1) * self.at(1, 0);
+        } else {
+            (0..self.dim)
+                .map(|c| self.at(0, c) * self.cofactor(0, c))
+                .sum()
+        }
+    }
+
+    pub fn submatrix(&self, row: usize, col: usize) -> Matrix {
+        let mut v: Vec<f64> = Vec::with_capacity((self.dim - 1) * (self.dim - 1));
+        for r in 0..self.dim {
+            for c in 0..self.dim {
+                if r != row && c != col {
+                    v.push(self.at(r, c));
+                }
+            }
+        }
+        Matrix::from_vector(self.dim - 1, &v)
+    }
+
+    pub fn minor(&self, row: usize, col: usize) -> f64 {
+        self.submatrix(row, col).det()
+    }
+
+    pub fn cofactor(&self, row: usize, col: usize) -> f64 {
+        if row + col % 2 == 0 {
+            self.minor(row, col)
+        } else {
+            -self.minor(row, col)
+        }
+    }
 }
 
 impl PartialEq for Matrix {
@@ -208,8 +242,87 @@ mod tests {
     }
 
     #[test]
-    fn inverting_matrix() {
+    fn transposing_identity_matrix() {
         let i = Matrix::identity();
+
         assert_eq!(Matrix::identity(), i.transpose());
+    }
+
+    #[test]
+    fn calculating_determinant_of_2x2_matrix() {
+        let v = vec![1.0, 5.0, -3.0, 2.0];
+        let m = Matrix::from_vector(2, &v);
+
+        assert_eq!(17.0, m.det());
+    }
+
+    #[test]
+    fn submatrix_of_3x3_matrix_is_2x2_matrix() {
+        let v1 = vec![1.0, 5.0, 0.0, -3.0, 2.0, 7.0, 0.0, 6.0, -3.0];
+        let m1 = Matrix::from_vector(3, &v1);
+
+        let v2 = vec![-3.0, 2.0, 0.0, 6.0];
+        let m2 = Matrix::from_vector(2, &v2);
+
+        assert_eq!(m2, m1.submatrix(0, 2));
+    }
+
+    #[test]
+    fn submatrix_of_4x4_matrix_is_3x3_matrix() {
+        let v1 = vec![
+            -6.0, 1.0, 1.0, 6.0, -8.0, 5.0, 8.0, 6.0, -1.0, 0.0, 8.0, 2.0, -7.0, 1.0, -1.0, 1.0,
+        ];
+        let m1 = Matrix::from_vector(4, &v1);
+
+        let v2 = vec![-6.0, 1.0, 6.0, -8.0, 8.0, 6.0, -7.0, -1.0, 1.0];
+        let m2 = Matrix::from_vector(3, &v2);
+
+        assert_eq!(m2, m1.submatrix(2, 1));
+    }
+
+    #[test]
+    fn calculating_minor_of_3x3_matrix() {
+        let v = vec![3.0, 5.0, 0.0, 2.0, -1.0, -7.0, 6.0, -1.0, 5.0];
+        let a = Matrix::from_vector(3, &v);
+        let b = a.submatrix(1, 0);
+
+        assert_eq!(25.0, b.det());
+        assert_eq!(25.0, a.minor(1, 0));
+    }
+
+    #[test]
+    fn calculating_cofactor_of_3x3_matrix() {
+        let v = vec![3.0, 5.0, 0.0, 2.0, -1.0, -7.0, 6.0, -1.0, 5.0];
+        let a = Matrix::from_vector(3, &v);
+
+        assert_eq!(-12.0, a.minor(0, 0));
+        assert_eq!(-12.0, a.cofactor(0, 0));
+        assert_eq!(25.0, a.minor(1, 0));
+        assert_eq!(-25.0, a.cofactor(1, 0));
+    }
+
+    #[test]
+    fn calculating_determinant_of_3x3_matrix() {
+        let v = vec![1.0, 2.0, 6.0, -5.0, 8.0, -4.0, 2.0, 6.0, 4.0];
+        let a = Matrix::from_vector(3, &v);
+
+        assert_eq!(56.0, a.cofactor(0, 0));
+        assert_eq!(12.0, a.cofactor(0, 1));
+        assert_eq!(-46.0, a.cofactor(0, 2));
+        assert_eq!(-196.0, a.det());
+    }
+
+    #[test]
+    fn calculating_determinant_of_4x4_matrix() {
+        let v = vec![
+            -2.0, -8.0, 3.0, 5.0, -3.0, 1.0, 7.0, 3.0, 1.0, 2.0, -9.0, 6.0, -6.0, 7.0, 7.0, -9.0,
+        ];
+        let a = Matrix::from_vector(4, &v);
+
+        assert_eq!(690.0, a.cofactor(0, 0));
+        assert_eq!(447.0, a.cofactor(0, 1));
+        assert_eq!(210.0, a.cofactor(0, 2));
+        assert_eq!(51.0, a.cofactor(0, 3));
+        assert_eq!(-4071.0, a.det());
     }
 }
