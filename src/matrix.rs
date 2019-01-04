@@ -1,5 +1,7 @@
 use std::ops::Mul;
 
+use crate::tuple::Tuple;
+
 /// Square Matrix
 #[derive(Debug)]
 pub struct Matrix {
@@ -17,6 +19,21 @@ impl Matrix {
 
     pub fn at(&self, r: usize, c: usize) -> f64 {
         self.elems[r * self.dim + c]
+    }
+
+    pub fn tuple_prod(&self, t: Tuple) -> Tuple {
+        assert!(self.dim == 4);
+        let dot = |r: usize| -> f64 {
+            self.at(r, 0) * t.0 + self.at(r, 1) * t.1 + self.at(r, 2) * t.2 + self.at(r, 3) * t.3
+        };
+        Tuple(dot(0), dot(1), dot(2), dot(3))
+    }
+
+    pub fn identity() -> Matrix {
+        let v = [
+            1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+        ];
+        Matrix::from_vector(4, &v)
     }
 }
 
@@ -140,5 +157,28 @@ mod tests {
         let m3 = Matrix::from_vector(4, &v3);
 
         assert_eq!(m3, m1 * m2);
+    }
+
+    #[test]
+    fn matrix_multiplied_by_tuple() {
+        let v = vec![
+            1.0, 2.0, 3.0, 4.0, 2.0, 4.0, 4.0, 2.0, 8.0, 6.0, 4.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+        ];
+        let m = Matrix::from_vector(4, &v);
+        let t = Tuple(1.0, 2.0, 3.0, 1.0);
+
+        assert_eq!(Tuple(18.0, 24.0, 33.0, 1.0), m.tuple_prod(t));
+    }
+
+    #[test]
+    fn multiplying_matrix_by_identity_matrix() {
+        let v = vec![
+            0.0, 1.0, 2.0, 4.0, 1.0, 2.0, 4.0, 8.0, 2.0, 4.0, 8.0, 16.0, 4.0, 8.0, 16.0, 32.0,
+        ];
+        let m = Matrix::from_vector(4, &v);
+        let m2 = Matrix::from_vector(4, &v); // TODO figure out how to deal with borrow checker
+        let p = m2 * Matrix::identity();
+
+        assert_eq!(m, p);
     }
 }
