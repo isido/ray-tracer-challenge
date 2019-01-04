@@ -17,6 +17,13 @@ impl Matrix {
         }
     }
 
+    pub fn identity() -> Matrix {
+        let v = [
+            1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+        ];
+        Matrix::from_vector(4, &v)
+    }
+
     pub fn at(&self, r: usize, c: usize) -> f64 {
         self.elems[r * self.dim + c]
     }
@@ -29,11 +36,14 @@ impl Matrix {
         Tuple(dot(0), dot(1), dot(2), dot(3))
     }
 
-    pub fn identity() -> Matrix {
-        let v = [
-            1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
-        ];
-        Matrix::from_vector(4, &v)
+    pub fn transpose(&self) -> Matrix {
+        let mut v: Vec<f64> = Vec::with_capacity(self.dim * self.dim);
+        for r in 0..self.dim {
+            for c in 0..self.dim {
+                v.push(self.at(c, r));
+            }
+        }
+        Matrix::from_vector(self.dim, &v)
     }
 }
 
@@ -180,5 +190,26 @@ mod tests {
         let p = m2 * Matrix::identity();
 
         assert_eq!(m, p);
+    }
+
+    #[test]
+    fn transposing_matrix() {
+        let v1 = vec![
+            0.0, 9.0, 3.0, 0.0, 9.0, 8.0, 0.0, 8.0, 1.0, 8.0, 5.0, 3.0, 0.0, 0.0, 5.0, 8.0,
+        ];
+        let m = Matrix::from_vector(4, &v1);
+
+        let v2 = vec![
+            0.0, 9.0, 1.0, 0.0, 9.0, 8.0, 8.0, 0.0, 3.0, 0.0, 5.0, 5.0, 0.0, 8.0, 3.0, 8.0,
+        ];
+        let t = Matrix::from_vector(4, &v2);
+
+        assert_eq!(t, m.transpose());
+    }
+
+    #[test]
+    fn inverting_matrix() {
+        let i = Matrix::identity();
+        assert_eq!(Matrix::identity(), i.transpose());
     }
 }
