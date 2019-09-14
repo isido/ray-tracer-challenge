@@ -1,16 +1,22 @@
 use crate::intersection::Intersection;
+use crate::matrix::Matrix;
 use crate::ray::Ray;
 use crate::tuple::Tuple;
 
 #[derive(Debug, PartialEq)]
-pub struct Sphere {}
+pub struct Sphere {
+    pub transform: Matrix,
+}
 
 impl Sphere {
     pub fn new() -> Sphere {
-        Sphere {}
+        Sphere {
+            transform: Matrix::identity(),
+        }
     }
 
-    pub fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
+    pub fn intersect(&self, orig_ray: &Ray) -> Vec<Intersection> {
+        let ray = orig_ray.transform(&self.transform.inverse());
         let sphere_to_ray = ray.origin - Tuple::point(0.0, 0.0, 0.0);
 
         let a = ray.direction.dot(ray.direction);
@@ -32,7 +38,9 @@ impl Sphere {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::matrix::Matrix;
     use crate::ray::Ray;
+    use crate::transformation;
     use crate::tuple::Tuple;
 
     #[test]
@@ -97,5 +105,44 @@ mod tests {
         assert_eq!(2, xs.len());
         assert_eq!(&s, xs[0].object);
         assert_eq!(&s, xs[1].object);
+    }
+
+    #[test]
+    fn spheres_default_transformation() {
+        let s = Sphere::new();
+
+        assert_eq!(Matrix::identity(), s.transform);
+    }
+
+    #[test]
+    fn changing_spheres_transformation() {
+        let mut s = Sphere::new();
+        let t = transformation::translation(2.0, 3.0, 4.0);
+        let tt = transformation::translation(2.0, 3.0, 4.0); // TODO make matrices copyable
+        s.transform = t;
+
+        assert_eq!(tt, s.transform);
+    }
+
+    #[test]
+    fn intersecting_scaled_sphere_with_ray() {
+        let r = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
+        let mut s = Sphere::new();
+        s.transform = transformation::scaling(2.0, 2.0, 2.0);
+        let xs = s.intersect(&r);
+
+        assert_eq!(2, xs.len());
+        assert_eq!(3.0, xs[0].t);
+        assert_eq!(7.0, xs[1].t);
+    }
+
+    #[test]
+    fn intersecting_translated_sphere_with_ray() {
+        let r = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
+        let mut s = Sphere::new();
+        s.transform = transformation::translation(5.0, 0.0, 0.0);
+        let xs = s.intersect(&r);
+
+        assert_eq!(0, xs.len());
     }
 }
