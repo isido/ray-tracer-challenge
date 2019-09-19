@@ -56,7 +56,7 @@ impl Tuple {
 
 impl PartialEq for Tuple {
     fn eq(&self, other: &Tuple) -> bool {
-        let eps = 1e-6;
+        let eps = 1e-5;
         (self.0 - other.0).abs() < eps
             && (self.1 - other.1).abs() < eps
             && (self.2 - other.2).abs() < eps
