@@ -114,6 +114,10 @@ impl Div<f64> for Tuple {
     }
 }
 
+pub fn reflect(in_: Tuple, normal: Tuple) -> Tuple {
+    in_ - normal * 2.0 * in_.dot(normal)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -317,6 +321,26 @@ mod tests {
         let c2 = Tuple::color(0.9, 1.0, 0.1);
 
         assert_eq!(Tuple::color(0.9, 0.2, 0.04), c1.hadamard(c2));
+    }
+
+    #[test]
+    fn reflecting_vector_approaching_at_45() {
+        let v = Tuple::vector(1.0, -1.0, 0.0);
+        let n = Tuple::vector(0.0, 1.0, 0.0);
+
+        let r = reflect(v, n);
+
+        assert_eq!(Tuple::vector(1.0, 1.0, 0.0), r);
+    }
+
+    #[test]
+    fn reflecting_vector_off_slanted_surface() {
+        let v = Tuple::vector(0.0, -1.0, 0.0);
+        let n = Tuple::vector(f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0, 0.0);
+
+        let r = reflect(v, n);
+
+        assert_eq!(Tuple::vector(1.0, 0.0, 0.0), r);
     }
 
 }
