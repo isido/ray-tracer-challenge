@@ -1,4 +1,5 @@
 use crate::intersection::Intersection;
+use crate::material::Material;
 use crate::matrix::Matrix;
 use crate::ray::Ray;
 use crate::tuple::Tuple;
@@ -6,12 +7,14 @@ use crate::tuple::Tuple;
 #[derive(Debug, PartialEq)]
 pub struct Sphere {
     pub transform: Matrix,
+    pub material: Material,
 }
 
 impl Sphere {
     pub fn new() -> Sphere {
         Sphere {
             transform: Matrix::identity(),
+            material: Material::new(),
         }
     }
 
@@ -50,6 +53,7 @@ impl Sphere {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::material::Material;
     use crate::matrix::Matrix;
     use crate::ray::Ray;
     use crate::transformation;
@@ -235,6 +239,24 @@ mod tests {
         ));
 
         assert_eq!(Tuple::vector(0.0, 0.97014, -0.24254), n);
+    }
+
+    #[test]
+    fn sphere_has_default_material() {
+        let s = Sphere::new();
+        let m = s.material;
+
+        assert_eq!(Material::new(), m);
+    }
+
+    #[test]
+    fn sphere_may_be_assigned_material() {
+        let mut s = Sphere::new();
+        let mut m = Material::new();
+        m.ambient = 1.0;
+        s.material = m;
+
+        assert_eq!(m, s.material);
     }
 
 }
