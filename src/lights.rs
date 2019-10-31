@@ -2,8 +2,8 @@ use crate::tuple::Tuple;
 
 #[derive(Debug)]
 pub struct PointLight {
-    intensity: Tuple,
-    position: Tuple,
+    pub intensity: Tuple,
+    pub position: Tuple,
 }
 
 pub fn point_light(pos: Tuple, inte: Tuple) -> PointLight {
