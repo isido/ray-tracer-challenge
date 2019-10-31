@@ -2,6 +2,7 @@ extern crate ray_tracer_challenge;
 
 use ray_tracer_challenge::canvas::Canvas;
 use ray_tracer_challenge::intersection;
+use ray_tracer_challenge::lights;
 use ray_tracer_challenge::ray::Ray;
 use ray_tracer_challenge::sphere::Sphere;
 use ray_tracer_challenge::tuple::Tuple;
@@ -15,8 +16,12 @@ fn main() {
     let half = wall_size / 2.0;
 
     let mut canvas = Canvas::new(canvas_pixels, canvas_pixels);
-    let color = Tuple::color(1.0, 0.0, 0.0);
-    let shape = Sphere::new();
+    let mut shape = Sphere::new();
+    shape.material.color = Tuple::color(1.0, 0.2, 1.0);
+
+    let light_position = Tuple::point(-10.0, 10.0, -10.0);
+    let light_color = Tuple::color(1.0, 1.0, 1.0);
+    let light = lights::point_light(light_position, light_color);
 
     for y in 0..canvas_pixels {
         let world_y = half - pixel_size * (y as f64);
@@ -26,7 +31,11 @@ fn main() {
             let r = Ray::new(ray_origin, (position - ray_origin).normalize());
             let xs = shape.intersect(&r);
 
-            if intersection::hit(&xs).is_some() {
+            if let Some(hit) = intersection::hit(&xs) {
+                let point = r.position(hit.t);
+                let normal = hit.object.normal_at(point);
+                let eye = -r.direction;
+                let color = hit.object.material.lightning(light, point, eye, normal);
                 canvas.write_pixel(x, y, color);
             }
         }
