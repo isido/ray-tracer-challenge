@@ -53,7 +53,6 @@ impl Material {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::lights;
     use crate::tuple::Tuple;
 
     #[test]
@@ -72,7 +71,7 @@ mod tests {
         let position = Tuple::point(0.0, 0.0, 0.0);
         let eyev = Tuple::vector(0.0, 0.0, -1.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
-        let light = lights::point_light(Tuple::point(0.0, 0.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
+        let light = PointLight::new(Tuple::point(0.0, 0.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
         let result = m.lightning(light, position, eyev, normalv);
 
         assert_eq!(Tuple::color(1.9, 1.9, 1.9), result);
@@ -84,8 +83,7 @@ mod tests {
         let position = Tuple::point(0.0, 0.0, 0.0);
         let eyev = Tuple::vector(0.0, 0.0, -1.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
-        let light =
-            lights::point_light(Tuple::point(0.0, 10.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
+        let light = PointLight::new(Tuple::point(0.0, 10.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
         let result = m.lightning(light, position, eyev, normalv);
 
         assert_eq!(Tuple::color(0.7364, 0.7364, 0.7364), result);
@@ -97,8 +95,7 @@ mod tests {
         let position = Tuple::point(0.0, 0.0, 0.0);
         let eyev = Tuple::vector(0.0, -f64::sqrt(2.0) / 2.0, -f64::sqrt(2.0) / 2.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
-        let light =
-            lights::point_light(Tuple::point(0.0, 10.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
+        let light = PointLight::new(Tuple::point(0.0, 10.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
         let result = m.lightning(light, position, eyev, normalv);
 
         assert_eq!(Tuple::color(1.6364, 1.6364, 1.6364), result);
@@ -110,10 +107,9 @@ mod tests {
         let position = Tuple::point(0.0, 0.0, 0.0);
         let eyev = Tuple::vector(0.0, 0.0, -1.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
-        let light = lights::point_light(Tuple::point(0.0, 0.0, 10.0), Tuple::color(1.0, 1.0, 1.0));
+        let light = PointLight::new(Tuple::point(0.0, 0.0, 10.0), Tuple::color(1.0, 1.0, 1.0));
         let result = m.lightning(light, position, eyev, normalv);
 
         assert_eq!(Tuple::color(0.1, 0.1, 0.1), result);
     }
-
 }

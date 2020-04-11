@@ -2,7 +2,7 @@ extern crate ray_tracer_challenge;
 
 use ray_tracer_challenge::canvas::Canvas;
 use ray_tracer_challenge::intersection;
-use ray_tracer_challenge::lights;
+use ray_tracer_challenge::lights::PointLight;
 use ray_tracer_challenge::ray::Ray;
 use ray_tracer_challenge::sphere::Sphere;
 use ray_tracer_challenge::tuple::Tuple;
@@ -21,7 +21,7 @@ fn main() {
 
     let light_position = Tuple::point(-10.0, 10.0, -10.0);
     let light_color = Tuple::color(1.0, 1.0, 1.0);
-    let light = lights::point_light(light_position, light_color);
+    let light = PointLight::new(light_position, light_color);
 
     for y in 0..canvas_pixels {
         let world_y = half - pixel_size * (y as f64);
