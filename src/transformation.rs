@@ -256,5 +256,4 @@ mod tests {
         let t = c * b * a;
         assert_eq!(Tuple::point(15.0, 0.0, 7.0), t.tuple_prod(p));
     }
-
 }
