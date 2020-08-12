@@ -27,7 +27,7 @@ impl<'a> Intersection<'a> {
         }
     }
 
-    pub fn prepare_computations(&self, r: Ray) -> Computations {
+    pub fn prepare_computations(&self, r: &Ray) -> Computations {
         let eyev_ = -r.direction;
         let mut normalv_ = self.object.normal_at(r.position(self.t));
         let mut inside_ = false;
@@ -142,7 +142,7 @@ mod tests {
         let shape = Sphere::new();
         let i = Intersection::new(4.0, &shape);
 
-        let comps = i.prepare_computations(r);
+        let comps = i.prepare_computations(&r);
         assert_eq!(i.t, comps.t);
         assert_eq!(i.object, comps.object);
         assert_eq!(Tuple::point(0.0, 0.0, -1.0), comps.point);
@@ -156,7 +156,7 @@ mod tests {
         let shape = Sphere::new();
         let i = Intersection::new(4.0, &shape);
 
-        let comps = i.prepare_computations(r);
+        let comps = i.prepare_computations(&r);
         assert_eq!(false, comps.inside);
     }
 
@@ -166,7 +166,7 @@ mod tests {
         let shape = Sphere::new();
         let i = Intersection::new(1.0, &shape);
 
-        let comps = i.prepare_computations(r);
+        let comps = i.prepare_computations(&r);
         assert_eq!(i.t, comps.t);
         assert_eq!(i.object, comps.object);
         assert_eq!(Tuple::point(0.0, 0.0, 1.0), comps.point);
