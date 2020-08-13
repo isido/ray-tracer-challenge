@@ -23,8 +23,8 @@ impl World {
         let mut s1 = Sphere::new();
         let m = Material {
             color: Tuple::color(0.8, 1.0, 0.6),
-            ambient: 0.0,
-            shininess: 0.0,
+            ambient: 0.1,
+            shininess: 200.0,
             diffuse: 0.7,
             specular: 0.2,
         };
@@ -100,8 +100,8 @@ mod tests {
         let mut s1 = Sphere::new();
         let m = Material {
             color: Tuple::color(0.8, 1.0, 0.6),
-            ambient: 0.0,
-            shininess: 0.0,
+            ambient: 0.1,
+            shininess: 200.0,
             diffuse: 0.7,
             specular: 0.2,
         };
@@ -132,6 +132,7 @@ mod tests {
 
     #[test]
     fn shading_intersection() {
+        // fail
         let w = World::default();
         let r = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
         let shape = &w.objects[0];
@@ -168,6 +169,7 @@ mod tests {
 
     #[test]
     fn color_when_ray_hits() {
+        // fail
         let w = World::default();
         let r = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
         let c = w.color_at(&r);
@@ -184,6 +186,6 @@ mod tests {
         inner.material.ambient = 1.0;
         let r = Ray::new(Tuple::point(0.0, 0.0, 0.75), Tuple::vector(0.0, 0.0, -1.0));
         let c = w.color_at(&r);
-        assert_eq!(expected, w.color_at(&r));
+        assert_eq!(expected, c);
     }
 }

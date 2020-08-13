@@ -21,10 +21,7 @@ pub struct Computations<'a> {
 
 impl<'a> Intersection<'a> {
     pub fn new(t: f64, object: &'a Sphere) -> Intersection<'a> {
-        Intersection {
-            t: t,
-            object: object,
-        }
+        Intersection { t, object }
     }
 
     pub fn prepare_computations(&self, r: &Ray) -> Computations {
